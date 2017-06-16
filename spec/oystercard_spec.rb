@@ -53,6 +53,15 @@ describe Oystercard do
     end
   end
 
+  describe '#new_journey_on_touch_out' do
+    it 'creates a new journey on touch out only edge case' do
+      card.new_journey_on_touch_out
+      expect(card.new_journey).not_to eq nil
+    end
+
+  end
+
+
   describe '#touch_out' do
     context "when journey ends" do
       before do
@@ -63,8 +72,8 @@ describe Oystercard do
         expect { card.touch_out(exit_station) }.to change { card.balance }.by(- Oystercard::MINIMUM)
       end
 
-      pending "should add our journey to journey history" do
-        card.touch_out(exit_station)
+      it "should add our journey to journey history" do
+        card.touch_in(station)
         expect(card.journey_history.last).to eq (card.new_journey)
       end
     end
@@ -84,7 +93,7 @@ describe Oystercard do
     end
 
     context 'when user is not in transit' do
-      pending 'returns false' do
+      it 'returns false' do
         card.touch_out(exit_station)
         expect(card).not_to be_in_journey
       end
