@@ -22,16 +22,25 @@ class Oystercard
   def touch_in(entry_station)
     raise "Less than £#{MINIMUM} funds" if @balance < MINIMUM
     new_journey_start(entry_station)
+    store_journey
   end
 
-  def new_journey_start(entry_station)
+  def new_journey_start(entry_station = nil)
     @new_journey = Journey.new(entry_station)
   end
 
+  def new_journey_on_touch_out
+    if !@new_journey
+      new_journey_start
+      store_journey
+    end
+  end
+
   def touch_out(exit_station)
-    @new_journey.set_exit_station(exit_station)
+    new_journey_on_touch_out
+    @journey_history.last.set_exit_station(exit_station)
     deduct(MINIMUM)
-    store_journey
+    @new_journey = nil
   end
 
   def store_journey
@@ -44,7 +53,7 @@ class Oystercard
 
 
   private
-  
+
   def deduct(amount)
     @balance -= amount
   end
